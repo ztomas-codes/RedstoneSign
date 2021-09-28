@@ -1,0 +1,7 @@
+name: RedstoneSign
+version: '${project.version}'
+main: me.lordmefloun.redstonesign.RedstoneSign
+api-version: 1.17
+authors: [ LordMefloun ]
+depend:
+  - Vault
