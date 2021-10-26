@@ -95,7 +95,7 @@ public class Listener implements org.bukkit.event.Listener {
 
     @EventHandler
     public void onDestroyTarget(BlockBreakEvent e){
-        SignObject so = SignObject.getSignObjectFromSignBlock(e.getBlock().getLocation());
+        SignObject so = SignObject.getSignObjectFromTargetBlock(e.getBlock().getLocation());
         if (so == null){
             return;
         }
