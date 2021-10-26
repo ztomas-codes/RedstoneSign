@@ -4,17 +4,19 @@ import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.material.Attachable;
+import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Listener implements org.bukkit.event.Listener {
@@ -29,11 +31,11 @@ public class Listener implements org.bukkit.event.Listener {
     @EventHandler
     public void onSignChange(SignChangeEvent e) {
         Player p = e.getPlayer();
-        if (e.getLine(0).equalsIgnoreCase("Redstone")){
+        if (e.getLine(0).equalsIgnoreCase("[Redstone]")){
             if (!e.getLine(1).equalsIgnoreCase("")){
-                e.setLine(0, ChatColor.translateAlternateColorCodes('&', "&b[&cRedstone&b]"));
-                e.setLine(1, ChatColor.translateAlternateColorCodes('&', "&e" + e.getLine(1)));
-                e.setLine(2, ChatColor.translateAlternateColorCodes('&', "&e" + p.getName()));
+                e.setLine(0, ChatColor.translateAlternateColorCodes('&', "&0&l[Redstone]"));
+                e.setLine(2, ChatColor.translateAlternateColorCodes('&', e.getLine(1)));
+                e.setLine(1, ChatColor.translateAlternateColorCodes('&', "&2&lAKTIVACE"));
                 Utils.sendMessage(p, "&aPolož někam blok abys uložil pozici, která se bude aktivovat po zakoupení");
                 SignObject.creating.put(p, e.getBlock());
             }
@@ -62,7 +64,7 @@ public class Listener implements org.bukkit.event.Listener {
         Player p = e.getPlayer();
         if (SignObject.creating.containsKey(p)){
             Sign sign = (Sign) SignObject.creating.get(p).getState();
-            double cost = Double.parseDouble(ChatColor.stripColor( sign.getLine(1)));
+            double cost = Double.parseDouble(ChatColor.stripColor( sign.getLine(2)));
             SignObject.saveToConfig(plugin, p.getPlayer().getUniqueId().toString(), cost, e.getBlock().getLocation(), SignObject.creating.get(p).getLocation());
 
             ConfigurationSection configSection = plugin.getConfig().getConfigurationSection("Signs");
@@ -96,9 +98,19 @@ public class Listener implements org.bukkit.event.Listener {
     @EventHandler
     public void onDestroyTarget(BlockBreakEvent e){
         SignObject so = SignObject.getSignObjectFromTargetBlock(e.getBlock().getLocation());
+
         if (so == null){
             return;
         }
         e.setCancelled(true);
     }
+
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e){
+        for (SignObject obj: SignObject.getSignObjectsFromUUID(e.getPlayer().getUniqueId())) {
+            obj.owner = (OfflinePlayer) e.getPlayer();
+        }
+    }
+
 }

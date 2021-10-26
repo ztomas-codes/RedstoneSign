@@ -3,7 +3,7 @@ package me.lordmefloun.redstonesign;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -34,6 +34,8 @@ public class SignObject {
         this.owner = Bukkit.getOfflinePlayer(uuid);
         this.cost = cost;
         decoy = this.target.getType();
+
+        this.target.setType(Material.OBSIDIAN);
     }
 
     public void buy(Player p){
@@ -70,6 +72,20 @@ public class SignObject {
         return null;
     }
 
+
+    public static HashSet<SignObject> getSignObjectsFromUUID(UUID uuid){
+        HashSet<SignObject> list = new HashSet<>();
+        for (SignObject obj : signs){
+            if (obj.owner.getUniqueId().equals(uuid)){
+                list.add(obj);
+            }
+        }
+        return list;
+    }
+
+
+
+
     public void trigger(){
         target.setType(Material.REDSTONE_BLOCK);
         new BukkitRunnable(){
@@ -86,6 +102,7 @@ public class SignObject {
         RedstoneSign.getPlugin(RedstoneSign.class).saveConfig();
         signs.remove(this);
         this.signblock = null;
+        this.target.setType(Material.AIR);
     }
 
     public static void saveToConfig(RedstoneSign pl, String owner, double cost, Location target, Location sign){
@@ -135,5 +152,6 @@ public class SignObject {
             }
         }
     }
+
 
 }
