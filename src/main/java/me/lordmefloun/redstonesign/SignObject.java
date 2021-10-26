@@ -61,6 +61,15 @@ public class SignObject {
         return null;
     }
 
+    public static SignObject getSignObjectFromTargetBlock(Location loc){
+        for (SignObject obj : signs){
+            if (obj.target.getLocation().equals(loc)){
+                return obj;
+            }
+        }
+        return null;
+    }
+
     public void trigger(){
         target.setType(Material.REDSTONE_BLOCK);
         new BukkitRunnable(){

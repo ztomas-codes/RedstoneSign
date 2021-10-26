@@ -78,7 +78,7 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler
-    public void onDestroy(BlockBreakEvent e){
+    public void onDestroySign(BlockBreakEvent e){
         Player p = e.getPlayer();
         SignObject so = SignObject.getSignObjectFromSignBlock(e.getBlock().getLocation());
         if (so == null){
@@ -91,5 +91,14 @@ public class Listener implements org.bukkit.event.Listener {
             so.remove(plugin);
             Utils.sendMessage(p, "&cObchod byl odstraněn");
         }
+    }
+
+    @EventHandler
+    public void onDestroyTarget(BlockBreakEvent e){
+        SignObject so = SignObject.getSignObjectFromSignBlock(e.getBlock().getLocation());
+        if (so == null){
+            return;
+        }
+        e.setCancelled(true);
     }
 }
