@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,8 +17,11 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.material.Attachable;
+import org.bukkit.material.Directional;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashSet;
 
 public class Listener implements org.bukkit.event.Listener {
 
@@ -63,19 +67,27 @@ public class Listener implements org.bukkit.event.Listener {
     public void onPlace(BlockPlaceEvent e){
         Player p = e.getPlayer();
         if (SignObject.creating.containsKey(p)){
-            Sign sign = (Sign) SignObject.creating.get(p).getState();
-            double cost = Double.parseDouble(ChatColor.stripColor( sign.getLine(2)));
-            SignObject.saveToConfig(plugin, p.getPlayer().getUniqueId().toString(), cost, e.getBlock().getLocation(), SignObject.creating.get(p).getLocation());
-
-            ConfigurationSection configSection = plugin.getConfig().getConfigurationSection("Signs");
-            Configuration config = plugin.getConfig();
-            int configIndexing = 0;
-            if (configSection != null) {for (String key : configSection.getKeys(false)) {configIndexing = Integer.parseInt(key);}}
-            configIndexing++;
-
-            SignObject.signs.add(new SignObject(SignObject.creating.get(p), e.getBlock(), p.getPlayer().getUniqueId().toString(), cost, configIndexing));
-            Utils.sendMessage(p, "&aTvůj redstone obchod byl úspešně vytvořen");
-            SignObject.creating.remove(p);
+            try {
+                Sign sign = (Sign) SignObject.creating.get(p).getState();
+                double cost = Double.parseDouble(ChatColor.stripColor(sign.getLine(2)));
+                SignObject.saveToConfig(plugin, p.getPlayer().getUniqueId().toString(), cost, e.getBlock().getLocation(), SignObject.creating.get(p).getLocation());
+                ConfigurationSection configSection = plugin.getConfig().getConfigurationSection("Signs");
+                Configuration config = plugin.getConfig();
+                int configIndexing = 0;
+                if (configSection != null) {
+                    for (String key : configSection.getKeys(false)) {
+                        configIndexing = Integer.parseInt(key);
+                    }
+                }
+                configIndexing++;
+                SignObject.signs.add(new SignObject(SignObject.creating.get(p), e.getBlock(), p.getPlayer().getUniqueId().toString(), cost, configIndexing));
+                Utils.sendMessage(p, "&aTvůj redstone obchod byl úspešně vytvořen");
+                SignObject.creating.remove(p);
+            }
+            catch (Exception a){
+                Utils.sendMessage(p, "&cNěkde se stala chyba");
+                SignObject.creating.remove(p);
+            }
         }
     }
 
@@ -104,7 +116,6 @@ public class Listener implements org.bukkit.event.Listener {
         }
         e.setCancelled(true);
     }
-
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e){

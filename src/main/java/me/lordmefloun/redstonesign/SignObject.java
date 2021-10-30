@@ -7,6 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Directional;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -71,7 +72,6 @@ public class SignObject {
         }
         return null;
     }
-
 
     public static HashSet<SignObject> getSignObjectsFromUUID(UUID uuid){
         HashSet<SignObject> list = new HashSet<>();

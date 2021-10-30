@@ -1,7 +1,6 @@
 package me.lordmefloun.redstonesign;
 
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.block.Sign;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,6 +18,8 @@ public final class RedstoneSign extends JavaPlugin {
             return;
         }
         SignObject.loadSignsFromConfig(this);
+        CheckRunnable cr = new CheckRunnable();
+        cr.runTaskTimer(this, 0, 20*2);
     }
 
     private boolean setupEconomy() {
